@@ -5,8 +5,8 @@ Coded in		:	C++ / inline asm
 Date			:	08.07.2012
 
 Notes			:	- This tool should help to test if your debugger is invisible against the targets
-				  Maybe some can learn something about the anti debug techniques while browsing the source
-				  Ofcourse the most things are easy to bypass but you should see what you need to fix in your debugger
+				- Maybe some can learn something about the anti debug techniques while browsing the source
+				- Ofcourse the most things are easy to bypass but you should see what you need to fix in your debugger
 					  
 				- If you have some ideas, other techniques (no time related things currently) or other suggestions than
 				  feel free to contact me!
