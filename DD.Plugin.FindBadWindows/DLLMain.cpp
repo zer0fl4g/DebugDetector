@@ -37,7 +37,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
 	bool* bDebugged = (bool*)lParam;
 
 	vWindowList.push_back(L"Immunity Debugger");
-	vWindowList.push_back(L"Debug");
+	vWindowList.push_back(L"IDA Pro");
 	vWindowList.push_back(L"Olly");
 	vWindowList.push_back(L"- [CPU]");
 

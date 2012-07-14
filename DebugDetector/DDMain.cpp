@@ -2,11 +2,16 @@
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine, int nCmdShow)
 {
-	DialogBox(hInstance,MAKEINTRESOURCE(IDD_MAINFRAME),NULL,reinterpret_cast<DLGPROC>(MainDLGProc));
+	INITCOMMONCONTROLSEX icx;
+	icx.dwSize=sizeof(icx);
+	icx.dwICC=ICC_LISTVIEW_CLASSES;
+	InitCommonControlsEx(&icx);
+
+	DialogBox(hInstance,MAKEINTRESOURCE(IDD_MAINFRAME),hwDlgMainFrame,reinterpret_cast<DLGPROC>(MainDLGProc));
 	return false;
 }
 
-LRESULT CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	hwDlgMainFrame = hWndDlg;
 	switch(Msg)
@@ -41,7 +46,7 @@ LRESULT CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			{
 				ExecutePlugins();
 				TCHAR* sTemp = (TCHAR*)malloc(255);
-				swprintf(sTemp,L"DebugCheck: loaded %d Plugins! - %d of %d detections - ratio: %0.2f %%",
+				swprintf(sTemp,L"Debug Detector: loaded %d Plugins! - %d of %d detections - ratio: %0.2f %%",
 					vPluginList.size(),
 					iDetectNum,
 					vPluginList.size(),
