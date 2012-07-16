@@ -40,12 +40,14 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
 	vWindowList.push_back(L"IDA Pro");
 	vWindowList.push_back(L"Olly");
 	vWindowList.push_back(L"- [CPU]");
+	vWindowList.push_back(L"PhantOm");
+	vWindowList.push_back(L"o_O -");
 
 	GetWindowText(hwnd,sTitel,255);
 
 	for(int i = 0;i < vWindowList.size(); i++)
 	{
-		if(wcsstr(sTitel,vWindowList[i].c_str()))
+		if(wcsstr(sTitel,vWindowList[i].c_str()) != NULL)
 			*bDebugged = true;
 	}
 	free(sTitel);
