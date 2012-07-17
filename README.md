@@ -1,4 +1,4 @@
-<center>DD - DebugDetector</center>
+DD - DebugDetector
 ============================
 
 ###Notes
@@ -16,16 +16,26 @@
 * [Tuts4You](http://tuts4you.com/download.php?view.3260)
 
 ###ToDo
-- Add more Plugins
-- Add color incase of debug detection
++ Add more Plugins
++ Add bad driver names
++ Add custom window titel depending on detection
++ fix x64 support
+
+###Changelog v0.2
++ added color on detection
++ added better error reporting on plugins
++ added OSVersion parameter to plugins
++ added NtYieldExecution plugin (by Aguila)
++ added CheckHeapMemory plugin
++ added some new windows to the FindBadWindow plugin
++ fixed a Windows XP display problem
 
 ###Features
 + Plugin Interface
  + simple to use
  + error messages
 + Show percentage of detection
-+ x64 support (inline asm needs to be ported to C++ cause visualstudio doesn´t support inline assambler in x64 mode but the other modules should work more or less)
-+ 17 Plugins
++ 18 Plugins
  + DebugObject
      + Using NtQueryInformationProcess to see if there are Debugging Objects for our process
  + CheckRemoteDebuggerPresent
@@ -58,5 +68,7 @@
      + enums the window list and checks if given windows are found
  + FindBadDrivers
      + enums the driver list and checks if given drivers are found
- + NTYieldExecution ( by Aguila)
-     + uses the NtYieldExecution API to detect if target is debugged
+ + NtYieldExecution (by Aguila)
+     + NtYieldExecution returns STATUS_NO_YIELD_PERFORMED if there is no other thread ( e.g debugger) but often fails if the system is overloaded and doesn´t allow a switch (not a good method)
+ + CheckHeapMemory
+     + allocs memory in the heap and checks if FEEEABABABABABABABAB (exists only on debug mode as overflow detection) is there

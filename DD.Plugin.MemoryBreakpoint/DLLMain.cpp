@@ -20,7 +20,7 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 	return sErrorMessage;
 }
 
-__declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
+__declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
 	unsigned char *pMem = NULL;
 	SYSTEM_INFO sysinfo = {0}; 
@@ -30,11 +30,9 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
 	GetSystemInfo(&sysinfo);
 
 	pAllocation = VirtualAlloc(NULL,sysinfo.dwPageSize,MEM_COMMIT | MEM_RESERVE,PAGE_EXECUTE_READWRITE); 
-
 	if (pAllocation == NULL)
 	{
-		sErrorMessage = (TCHAR*)malloc(255);
-		wsprintf(sErrorMessage,L"%s","Alloc failed!");
+		sErrorMessage = TEXT("VirtualAlloc failed!");
 		return -1; 
 	}
 
@@ -42,7 +40,10 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
 	*pMem = 0xc3; // ret
        
 	if (VirtualProtect(pAllocation, sysinfo.dwPageSize,PAGE_EXECUTE_READWRITE | PAGE_GUARD,&OldProtect) == 0)
-		return false;
+	{
+		sErrorMessage = TEXT("VirtualProtect failed!");
+		return -1;
+	}
 
 	__try
 	{

@@ -20,39 +20,38 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 	return sErrorMessage;
 }
 
-__declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
+__declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
-	int counter = 0x20;
-	int debugged = 0;
+	typedef NTSTATUS (WINAPI *def_NtYieldExecution)();
 	def_NtYieldExecution _NtYieldExecution = 0;
+
+	int iCounter = 0x20,
+		iDebugged = 0;
+
 	HMODULE hModuleNtdll = GetModuleHandleW(TEXT("ntdll.dll"));
 	if (!hModuleNtdll)
 	{
 		sErrorMessage = TEXT("ntdll handle not found");
-		return 0;
+		return -1;
 	}
+
 	_NtYieldExecution = (def_NtYieldExecution)GetProcAddress(hModuleNtdll, "NtYieldExecution");
 	if (!_NtYieldExecution)
 	{
 		sErrorMessage = TEXT("NtYieldExecution not found");
-		return 0;
+		return -1;
 	}
+
 	do
 	{
 		Sleep(0xF);
 		if (_NtYieldExecution() != _STATUS_NO_YIELD_PERFORMED)
-		{
-			debugged++;
-		}
-		counter--;
-	} while (counter > 0);
+			iDebugged++;
+		iCounter--;
+	} while (iCounter > 0);
 
-	if (debugged <= 1)
-	{
+	if (iDebugged <= 1)
 		return 0;
-	}
 	else
-	{
 		return 1;
-	}
 }

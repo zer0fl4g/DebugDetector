@@ -20,10 +20,15 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 	return sErrorMessage;
 }
 
-__declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
+__declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
 	bool bDebugged = false;
-	EnumWindows(EnumWindowsProc,(LPARAM)&bDebugged);
+	if(!EnumWindows(EnumWindowsProc,(LPARAM)&bDebugged))
+	{
+		sErrorMessage = TEXT("EnumWindows failed!");
+		return -1;
+	}
+
 	if(bDebugged)
 		return 1;
 	else
@@ -42,10 +47,11 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
 	vWindowList.push_back(L"- [CPU]");
 	vWindowList.push_back(L"PhantOm");
 	vWindowList.push_back(L"o_O -");
+	vWindowList.push_back(L"Visual Studio");
 
 	GetWindowText(hwnd,sTitel,255);
 
-	for(int i = 0;i < vWindowList.size(); i++)
+	for(size_t i = 0;i < vWindowList.size(); i++)
 	{
 		if(wcsstr(sTitel,vWindowList[i].c_str()) != NULL)
 			*bDebugged = true;

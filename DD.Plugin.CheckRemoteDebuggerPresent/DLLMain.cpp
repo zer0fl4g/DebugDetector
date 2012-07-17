@@ -19,7 +19,7 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 	return sErrorMessage;
 }
 
-__declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
+__declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
 	BOOL bDebugged = false;
 	CheckRemoteDebuggerPresent(GetCurrentProcess(),&bDebugged);

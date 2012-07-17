@@ -42,6 +42,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DD.Plugin.FindBadDrivers", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DD.Plugin.NTYieldExecution", "DD.Plugin.NTYieldExecution\DD.Plugin.NTYieldExecution.vcxproj", "{8DC5BDB7-BA6F-4495-854F-716F9744D32F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DD.Plugin.CheckHeapMemory", "DD.Plugin.CheckHeapMemory\DD.Plugin.CheckHeapMemory.vcxproj", "{F712449E-CD06-437F-9419-122EC5FDDE9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -182,6 +184,12 @@ Global
 		{8DC5BDB7-BA6F-4495-854F-716F9744D32F}.Release|Win32.Build.0 = Release|Win32
 		{8DC5BDB7-BA6F-4495-854F-716F9744D32F}.Release|x64.ActiveCfg = Release|x64
 		{8DC5BDB7-BA6F-4495-854F-716F9744D32F}.Release|x64.Build.0 = Release|x64
+		{F712449E-CD06-437F-9419-122EC5FDDE9E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F712449E-CD06-437F-9419-122EC5FDDE9E}.Debug|Win32.Build.0 = Debug|Win32
+		{F712449E-CD06-437F-9419-122EC5FDDE9E}.Debug|x64.ActiveCfg = Debug|Win32
+		{F712449E-CD06-437F-9419-122EC5FDDE9E}.Release|Win32.ActiveCfg = Release|Win32
+		{F712449E-CD06-437F-9419-122EC5FDDE9E}.Release|Win32.Build.0 = Release|Win32
+		{F712449E-CD06-437F-9419-122EC5FDDE9E}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

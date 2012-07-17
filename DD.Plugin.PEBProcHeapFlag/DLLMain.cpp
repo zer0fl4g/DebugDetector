@@ -20,9 +20,9 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 	return sErrorMessage;
 }
 
-__declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
+__declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
-	if(GetWinVersion() == 3)
+	if(iWinVer == 3)
 	{
 		__asm
 		{
@@ -33,7 +33,7 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
 			jne DebuggerDetected
 		}
 	}
-	else if (GetWinVersion() < 3)
+	else if (iWinVer < 3)
 	{
 		__asm
 		{
@@ -47,32 +47,4 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
 	return 0;
 	__asm{DebuggerDetected:}
 	return 1;
-}
-
-int GetWinVersion()
-{
-	OSVERSIONINFO osVerInfo;
-	OSVERSIONINFOEX osVerEx;
-
-	ZeroMemory(&osVerInfo,sizeof(OSVERSIONINFO));
-	ZeroMemory(&osVerEx,sizeof(OSVERSIONINFOEX));
-	osVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	osVerEx.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-	GetVersionEx(&osVerInfo);
-	GetVersionEx((OSVERSIONINFO*)&osVerEx);
-
-	if(osVerInfo.dwMajorVersion == 5 && osVerInfo.dwMinorVersion == 0 )
-		return 0;//WIN_2000;
-
-	if(osVerInfo.dwMajorVersion == 5 && osVerInfo.dwMinorVersion == 1 )
-		return 1;//WIN_XP;
-
-	if(osVerInfo.dwMajorVersion == 6 && osVerInfo.dwMinorVersion == 0 && osVerEx.wProductType == VER_NT_WORKSTATION )
-		return 2;//WIN_VISTA;
-
-	if(osVerInfo.dwMajorVersion == 6 && osVerInfo.dwMinorVersion == 1 && osVerEx.wProductType == VER_NT_WORKSTATION )
-		return 3;//WIN_7;
-
-	return -1;
 }

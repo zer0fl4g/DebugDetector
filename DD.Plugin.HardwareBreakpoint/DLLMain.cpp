@@ -20,7 +20,7 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 	return sErrorMessage;
 }
 
-__declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
+__declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
 	HANDLE hThread = GetCurrentThread();
 	CONTEXT cTT; 
@@ -29,7 +29,11 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
 	ZeroMemory(&cTT,sizeof(CONTEXT));
 	cTT.ContextFlags = CONTEXT_ALL;
 
-	GetThreadContext(hThread,&cTT);
+	if(!GetThreadContext(hThread,&cTT))
+	{
+		sErrorMessage = TEXT("GetThreadContext failed!");
+		return -1;
+	}
 
 	if(cTT.Dr0 != NULL)
 		bDebugged = true;

@@ -20,7 +20,7 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 	return sErrorMessage;
 }
 
-__declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
+__declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
 	LPVOID lpDrivers[1024];
 	DWORD cbNeeded = 0;
@@ -39,11 +39,16 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
 		{
 			if(GetDeviceDriverBaseName(lpDrivers[i],szDriver,sizeof(szDriver) / sizeof(szDriver[0])))
 			{
-				for(int a = 0;a < vDriverList.size(); a++)
+				for(size_t a = 0;a < vDriverList.size(); a++)
 					if(wcsstr(szDriver,vDriverList[a].c_str()) != NULL)
 						return 1;
 			}
 		}
+	}
+	else
+	{
+		sErrorMessage = TEXT("EnumDeviceDrivers failed!");
+		return -1;
 	}
 	return 0;
 } 

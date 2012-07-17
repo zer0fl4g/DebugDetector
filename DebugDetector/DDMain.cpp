@@ -11,7 +11,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine,
 	return false;
 }
 
-INT_PTR CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	hwDlgMainFrame = hWndDlg;
 	switch(Msg)
@@ -54,6 +54,14 @@ INT_PTR CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 
 				SetWindowTextW(GetDlgItem(hwDlgMainFrame,IDC_STATE),sTemp);			
 				free(sTemp);
+			}
+			return true;
+		}
+	case WM_NOTIFY:
+		{
+			if(((LPNMHDR)lParam)->code == NM_CUSTOMDRAW)
+			{
+			   SetWindowLong(hwDlgMainFrame,DWL_MSGRESULT,(LONG)DrawDetectionColor(lParam));
 			}
 			return true;
 		}
@@ -116,7 +124,8 @@ bool LoadPlugins()
 
 bool ExecutePlugins()
 {
-	for(int i = 0; i < vPluginList.size(); i++)
+	int iWinVer = GetWinVersion();
+	for(size_t i = 0; i < vPluginList.size(); i++)
 	{
 		PluginName newPluginName = (PluginName)vPluginList[i].dwName;
 		PluginVersion newPluginVersion = (PluginVersion)vPluginList[i].dwVersion;
@@ -142,7 +151,7 @@ bool ExecutePlugins()
 		SendMessage(hwPluginList,LVM_SETITEM,0,(LPARAM)&LvItem);
 
 		memset(sTemp,0,255);
-		switch(newPluginDebugCheck())
+		switch(newPluginDebugCheck(iWinVer))
 		{
 		case 0:
 			wsprintf(sTemp,L"%s",L"FALSE");
@@ -164,4 +173,65 @@ bool ExecutePlugins()
 		free(sTemp);
 	}
 	return true;
+}
+
+int GetWinVersion()
+{
+	OSVERSIONINFO osVerInfo;
+	OSVERSIONINFOEX osVerEx;
+
+	ZeroMemory(&osVerInfo,sizeof(OSVERSIONINFO));
+	ZeroMemory(&osVerEx,sizeof(OSVERSIONINFOEX));
+	osVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	osVerEx.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	GetVersionEx(&osVerInfo);
+	GetVersionEx((OSVERSIONINFO*)&osVerEx);
+
+	if(osVerInfo.dwMajorVersion == 5 && osVerInfo.dwMinorVersion == 0 )
+		return 0;//WIN_2000;
+
+	if(osVerInfo.dwMajorVersion == 5 && osVerInfo.dwMinorVersion == 1 )
+		return 1;//WIN_XP;
+
+	if(osVerInfo.dwMajorVersion == 6 && osVerInfo.dwMinorVersion == 0 && osVerEx.wProductType == VER_NT_WORKSTATION )
+		return 2;//WIN_VISTA;
+
+	if(osVerInfo.dwMajorVersion == 6 && osVerInfo.dwMinorVersion == 1 && osVerEx.wProductType == VER_NT_WORKSTATION )
+		return 3;//WIN_7;
+
+	return -1;
+}
+
+LRESULT DrawDetectionColor(LPARAM lParam)
+{
+    LPNMLVCUSTOMDRAW nmlvCustDraw = (LPNMLVCUSTOMDRAW)lParam;
+    switch(nmlvCustDraw->nmcd.dwDrawStage) 
+    {
+        case CDDS_PREPAINT:
+            return CDRF_NOTIFYITEMDRAW;
+            
+        case CDDS_ITEMPREPAINT:
+			{
+				TCHAR* sTemp = (TCHAR*)malloc(255);
+				ListView_GetItemText(GetDlgItem(hwDlgMainFrame,IDC_PLUGINS),(int)nmlvCustDraw->nmcd.dwItemSpec,2,sTemp,255);
+
+				if (wcsstr(sTemp,L"TRUE") != NULL)
+				{
+					nmlvCustDraw->clrText   = RGB(0,0,0);
+					nmlvCustDraw->clrTextBk = RGB(255,0,0);
+					free(sTemp);
+					return CDRF_NEWFONT;
+				}
+				else{
+					nmlvCustDraw->clrText   = RGB(0,0,0);
+					nmlvCustDraw->clrTextBk = RGB(0,255,0);
+            		free(sTemp);
+					return CDRF_NEWFONT;
+				}
+				free(sTemp);
+				break;
+			}
+    }
+    return CDRF_DODEFAULT;
 }

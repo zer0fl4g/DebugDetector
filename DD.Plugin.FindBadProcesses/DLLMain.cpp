@@ -20,7 +20,7 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 	return sErrorMessage;
 }
 
-__declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
+__declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
 	vector<wstring> vProcList;
 	
@@ -41,12 +41,17 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(void)
 		{
 			do
 			{
-				for(int i = 0; i < vProcList.size(); i++)
+				for(size_t i = 0; i < vProcList.size(); i++)
 					if(wcsstr(wcsupr(pe32w.szExeFile),wcsupr((TCHAR*)vProcList[i].c_str())) != NULL)
 						bDebugged = true;
 			} while(Process32Next(hProcessSnap,&pe32w));
 		}
 		CloseHandle(hProcessSnap);
+	}
+	else
+	{
+		sErrorMessage = TEXT("CreateToolhelp32Snapshot: invalid handle");
+		return -1;
 	}
 	
 	if(bDebugged)
