@@ -10,9 +10,9 @@ __declspec(dllexport) TCHAR* __cdecl PluginName(void)
 	return L"ProcessDebugFlags";
 }
 
-__declspec(dllexport) TCHAR* __cdecl PluginVersion(void)
+__declspec(dllexport) char* __cdecl PluginVersion(void)
 {
-	return L"0.1";
+	return __DATE__;
 }
 
 __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
@@ -44,8 +44,7 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 	Status = NtQIP(GetCurrentProcess(),0x1f,&NoDebugInherit,4,NULL); 
 	if (Status != 0x00000000)
 	{
-		sErrorMessage = (TCHAR*)malloc(255);
-		wsprintf(sErrorMessage,L"0x%08",Status);
+		sErrorMessage = TEXT("Error in NtQueryInformationProcess");
 		return -1; 
 	}
 

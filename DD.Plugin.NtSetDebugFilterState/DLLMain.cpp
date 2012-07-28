@@ -7,7 +7,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved)
 
 __declspec(dllexport) TCHAR* __cdecl PluginName(void)
 {
-	return L"DebugObject";
+	return L"NtSetDebugFilterState";
 }
 
 __declspec(dllexport) char* __cdecl PluginVersion(void)
@@ -22,10 +22,10 @@ __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
 
 __declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 {
-	typedef NTSTATUS (WINAPI *pNtQueryInformationProcess)(HANDLE,UINT,PVOID,ULONG,PULONG); 
+	typedef NTSTATUS (WINAPI *pNtSetDebugFilterState)(DWORD,DWORD,bool); 
 
-	HANDLE hDebugObject = NULL;
-	NTSTATUS Status; 
+	DWORD NoDebugInherit = 0;
+	NTSTATUS Status = 0; 
 
 	HMODULE hNTDLL = GetModuleHandle(L"ntdll.dll");
 	if(hNTDLL == INVALID_HANDLE_VALUE)
@@ -34,18 +34,15 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 		return -1;
 	}
 
-	pNtQueryInformationProcess NtQIP = (pNtQueryInformationProcess)GetProcAddress(hNTDLL,"NtQueryInformationProcess"); 
-	if(NtQIP == NULL)
+	pNtSetDebugFilterState NtSDFS = (pNtSetDebugFilterState)GetProcAddress(hNTDLL,"NtSetDebugFilterState"); 
+	if(NtSDFS == NULL)
 	{
 		sErrorMessage = TEXT("Failed to load NtQueryInformationProcess");
 		return -1;
 	}
 
-	Status = NtQIP(GetCurrentProcess(),0x1e,&hDebugObject,4,NULL); 
-	if (Status != 0x00000000)
-		return 0;
-
-	if(hDebugObject)
+	Status = NtSDFS(0,0,true); 
+	if (Status == 0x00000000L)
 		return 1;
 	else
 		return 0;

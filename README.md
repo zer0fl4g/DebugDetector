@@ -16,15 +16,22 @@ DD - DebugDetector
 * [Tuts4You](http://tuts4you.com/download.php?view.3260)
 
 ###ToDo
-+ Add more Plugins
-+ Add bad driver names
-+ Add custom window titel depending on detection
++ add more Plugins
++ add bad driver names
 + fix x64 support
+ + remove as much inline asm as possible
++ fix more memory leaks
 
-###Changelog v0.2
+####Changelog until now
++ added NtQuerySystemInformation
++ added NtSetDebugFilterState
++ fixed small memory leaks
++ changed version numbers (automatic set to build date of plugins)
+
+####Changelog v0.2
 + added color on detection
-+ added better error reporting on plugins
-+ added OSVersion parameter to plugins
++ added better error reporting by plugins
++ added OSVersion as parameter to plugins
 + added NtYieldExecution plugin (by Aguila)
 + added CheckHeapMemory plugin
 + added some new windows to the FindBadWindow plugin
@@ -35,7 +42,7 @@ DD - DebugDetector
  + simple to use
  + error messages
 + Show percentage of detection
-+ 18 Plugins
++ 20 Plugins
  + DebugObject
      + Using NtQueryInformationProcess to see if there are Debugging Objects for our process
  + CheckRemoteDebuggerPresent
@@ -71,4 +78,8 @@ DD - DebugDetector
  + NtYieldExecution (by Aguila)
      + NtYieldExecution returns STATUS_NO_YIELD_PERFORMED if there is no other thread ( e.g debugger) but often fails if the system is overloaded and doesn´t allow a switch (not a good method)
  + CheckHeapMemory
-     + allocs memory in the heap and checks if FEEEABABABABABABABAB (exists only on debug mode as overflow detection) is there
+     + allocs memory in the heap and checks if FEEEABABABABABABABABFEEE (exists only on debug mode as overflow detection) is there
+ + NTSetDebugFilterState
+	 + Uses the return value of the ntdll api "NtSetDebugFilterState" to check if the target is running under a debugger
+ + NTQuerySystemInformation
+	 + Uses the NtQuerySystemInformation API to check if the target is running under a debugger

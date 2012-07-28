@@ -10,9 +10,9 @@ __declspec(dllexport) TCHAR* __cdecl PluginName(void)
 	return L"IsDebuggerPresent";
 }
 
-__declspec(dllexport) TCHAR* __cdecl PluginVersion(void)
+__declspec(dllexport) char* __cdecl PluginVersion(void)
 {
-	return L"0.1";
+	return __DATE__;
 }
 
 __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)

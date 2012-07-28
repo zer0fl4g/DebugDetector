@@ -10,9 +10,9 @@ __declspec(dllexport) TCHAR* __cdecl PluginName(void)
 	return L"BadWindowsList";
 }
 
-__declspec(dllexport) TCHAR* __cdecl PluginVersion(void)
+__declspec(dllexport) char* __cdecl PluginVersion(void)
 {
-	return L"0.1";
+	return __DATE__;
 }
 
 __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
@@ -38,7 +38,7 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
 {
 	vector<wstring> vWindowList;
-	TCHAR* sTitel = (TCHAR*)malloc(255);
+	TCHAR* sTitel = (TCHAR*)malloc(MAX_PATH);
 	bool* bDebugged = (bool*)lParam;
 
 	vWindowList.push_back(L"Immunity Debugger");
@@ -48,8 +48,9 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
 	vWindowList.push_back(L"PhantOm");
 	vWindowList.push_back(L"o_O -");
 	vWindowList.push_back(L"Visual Studio");
+	vWindowList.push_back(L"WinDbgFrameClass");
 
-	GetWindowText(hwnd,sTitel,255);
+	GetWindowText(hwnd,sTitel,MAX_PATH);
 
 	for(size_t i = 0;i < vWindowList.size(); i++)
 	{

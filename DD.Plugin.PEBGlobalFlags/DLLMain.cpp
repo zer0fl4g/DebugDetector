@@ -10,9 +10,9 @@ __declspec(dllexport) TCHAR* __cdecl PluginName(void)
 	return L"PEBGlobalFlag";
 }
 
-__declspec(dllexport) TCHAR* __cdecl PluginVersion(void)
+__declspec(dllexport) char* __cdecl PluginVersion(void)
 {
-	return L"0.1";
+	return __DATE__;
 }
 
 __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
@@ -30,7 +30,7 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 		cmp eax,70h
 		je DebuggerDetected
 	}
-	
+
 	return 0;
 	__asm{DebuggerDetected:}
 	return 1;

@@ -2,8 +2,15 @@
 #include <WindowsX.h>
 #include <CommCtrl.h>
 #include <vector>
-#include "resource.h"
 #include <CommCtrl.h>
+#include "resource.h"
+
+// Leak detection
+//#include <stdlib.h>
+//#include <crtdbg.h>
+//
+//#define _CRTDBG_MAP_ALLOC
+// Leak detection
 
 using namespace std;
 
@@ -17,19 +24,17 @@ struct srcPlugin
 };
 
 LRESULT CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
+LRESULT DrawDetectionColor(LPARAM lParam);
 
 bool LoadPlugins();
 bool ExecutePlugins();
 
 int GetWinVersion();
 
-LRESULT DrawDetectionColor(LPARAM lParam);
-
-typedef TCHAR* (*PluginVersion)(void);
+typedef char*  (*PluginVersion)(void);
 typedef TCHAR* (*PluginName)(void);
 typedef TCHAR* (*PluginErrorMessage)(void);
 typedef DWORD  (*PluginDebugCheck)(int iWinVers);
-
 
 HWND hwDlgMainFrame = NULL;
 

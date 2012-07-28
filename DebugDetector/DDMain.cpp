@@ -3,11 +3,13 @@
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine, int nCmdShow)
 {
 	INITCOMMONCONTROLSEX icx;
-	icx.dwSize=sizeof(icx);
-	icx.dwICC=ICC_LISTVIEW_CLASSES;
+	icx.dwSize = sizeof(icx);
+	icx.dwICC = ICC_LISTVIEW_CLASSES;
 	InitCommonControlsEx(&icx);
 
 	DialogBox(hInstance,MAKEINTRESOURCE(IDD_MAINFRAME),hwDlgMainFrame,reinterpret_cast<DLGPROC>(MainDLGProc));
+
+	_CrtDumpMemoryLeaks();
 	return false;
 }
 
@@ -28,13 +30,13 @@ LRESULT CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			LvCol.cx = 0x100;                               
 			SendMessage(hwPluginList,LVM_INSERTCOLUMN,0,(LPARAM)&LvCol);
 			LvCol.pszText = L"Version";
-			LvCol.cx = 0x30;
+			LvCol.cx = 0x45;
 			SendMessage(hwPluginList,LVM_INSERTCOLUMN,1,(LPARAM)&LvCol);
 			LvCol.pszText = L"Debugged"; 
 			LvCol.cx = 0x40;
 			SendMessage(hwPluginList,LVM_INSERTCOLUMN,2,(LPARAM)&LvCol);
 			LvCol.pszText = L"ErrorMessage"; 
-			LvCol.cx = 0x80;
+			LvCol.cx = 0x99;
 			SendMessage(hwPluginList,LVM_INSERTCOLUMN,3,(LPARAM)&LvCol);
 
 			if(!LoadPlugins())
@@ -45,12 +47,12 @@ LRESULT CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			else
 			{
 				ExecutePlugins();
-				TCHAR* sTemp = (TCHAR*)malloc(255);
-				swprintf(sTemp,L"Debug Detector: loaded %d Plugins! - %d of %d detections - ratio: %0.2f %%",
+				TCHAR* sTemp = (TCHAR*)malloc(MAX_PATH * sizeof(TCHAR));
+				swprintf_s(sTemp,MAX_PATH,L"Debug Detector: loaded %d Plugins! - %d of %d detections - ratio: %0.3f %%",
 					vPluginList.size(),
 					iDetectNum,
 					vPluginList.size(),
-					((iDetectNum* 1.0 / vPluginList.size() *  1.0)  * 100));
+					((iDetectNum * 1.0 / vPluginList.size() *  1.0)  * 100));
 
 				SetWindowTextW(GetDlgItem(hwDlgMainFrame,IDC_STATE),sTemp);			
 				free(sTemp);
@@ -61,7 +63,7 @@ LRESULT CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		{
 			if(((LPNMHDR)lParam)->code == NM_CUSTOMDRAW)
 			{
-			   SetWindowLong(hwDlgMainFrame,DWL_MSGRESULT,(LONG)DrawDetectionColor(lParam));
+			   SetWindowLong(hwDlgMainFrame,0,(LONG)DrawDetectionColor(lParam));
 			}
 			return true;
 		}
@@ -78,10 +80,10 @@ bool LoadPlugins()
 {
 	WIN32_FIND_DATA FindDataw32;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
-
 	TCHAR* szCurDir = (TCHAR*)malloc(MAX_PATH);
+
 	GetCurrentDirectory(MAX_PATH,szCurDir);
-	wcscat(szCurDir,L"\\*");
+	wcscat_s(szCurDir,MAX_PATH / sizeof(TCHAR),L"\\*");
 
 	hFind = FindFirstFile(szCurDir,&FindDataw32);
 
@@ -124,7 +126,12 @@ bool LoadPlugins()
 
 bool ExecutePlugins()
 {
-	int iWinVer = GetWinVersion();
+	LVITEM LvItem;
+	TCHAR* sTemp = (TCHAR*)malloc(MAX_PATH * sizeof(TCHAR));
+	HWND hwPluginList = GetDlgItem(hwDlgMainFrame,IDC_PLUGINS);
+	int iWinVer = GetWinVersion(),
+		itemIndex = 0;
+
 	for(size_t i = 0; i < vPluginList.size(); i++)
 	{
 		PluginName newPluginName = (PluginName)vPluginList[i].dwName;
@@ -132,46 +139,42 @@ bool ExecutePlugins()
 		PluginDebugCheck newPluginDebugCheck = (PluginDebugCheck)vPluginList[i].dwDebugCheck;
 		PluginErrorMessage newPluginErrorMessage = (PluginErrorMessage)vPluginList[i].dwErrorMessage;
 
-		LVITEM LvItem;
-		TCHAR* sTemp = (TCHAR*)malloc(255);
-		HWND hwPluginList = GetDlgItem(hwDlgMainFrame,IDC_PLUGINS);
-		int itemIndex = SendMessage(hwPluginList,LVM_GETITEMCOUNT,0,0);
+		itemIndex = SendMessage(hwPluginList,LVM_GETITEMCOUNT,0,0);
 
 		memset(&LvItem,0,sizeof(LvItem));
-		wsprintf(sTemp,L"%s",newPluginName());
+		swprintf_s(sTemp,MAX_PATH,L"%s",newPluginName());
 		LvItem.mask = LVIF_TEXT;
-		LvItem.cchTextMax = 255;
+		LvItem.cchTextMax = MAX_PATH * sizeof(TCHAR);
 		LvItem.iItem = itemIndex;
 		LvItem.iSubItem = 0;
 		LvItem.pszText = sTemp;
 		SendMessage(hwPluginList,LVM_INSERTITEM,0,(LPARAM)&LvItem);
 
-		wsprintf(sTemp,L"%s",newPluginVersion());
+		swprintf_s(sTemp,MAX_PATH,L"%S",newPluginVersion());
 		LvItem.iSubItem = 1;
 		SendMessage(hwPluginList,LVM_SETITEM,0,(LPARAM)&LvItem);
 
-		memset(sTemp,0,255);
 		switch(newPluginDebugCheck(iWinVer))
 		{
 		case 0:
-			wsprintf(sTemp,L"%s",L"FALSE");
+			swprintf_s(sTemp,MAX_PATH,L"%s",L"FALSE");
 			break;
 		case 1:
-			wsprintf(sTemp,L"%s",L"TRUE");	
+			swprintf_s(sTemp,MAX_PATH,L"%s",L"TRUE");	
 			iDetectNum++;
 			break;
 		case -1:
-			wsprintf(sTemp,L"%s",newPluginErrorMessage());
+			swprintf_s(sTemp,MAX_PATH,L"%s",newPluginErrorMessage());
 			LvItem.iSubItem = 3;
 			SendMessage(hwPluginList,LVM_SETITEM,0,(LPARAM)&LvItem);
+			memset(sTemp,0,MAX_PATH * sizeof(TCHAR));
 			break;
 		}
 				
 		LvItem.iSubItem = 2;
 		SendMessage(hwPluginList,LVM_SETITEM,0,(LPARAM)&LvItem);
-
-		free(sTemp);
 	}
+	free(sTemp);
 	return true;
 }
 
@@ -190,15 +193,14 @@ int GetWinVersion()
 
 	if(osVerInfo.dwMajorVersion == 5 && osVerInfo.dwMinorVersion == 0 )
 		return 0;//WIN_2000;
-
 	if(osVerInfo.dwMajorVersion == 5 && osVerInfo.dwMinorVersion == 1 )
 		return 1;//WIN_XP;
-
 	if(osVerInfo.dwMajorVersion == 6 && osVerInfo.dwMinorVersion == 0 && osVerEx.wProductType == VER_NT_WORKSTATION )
 		return 2;//WIN_VISTA;
-
 	if(osVerInfo.dwMajorVersion == 6 && osVerInfo.dwMinorVersion == 1 && osVerEx.wProductType == VER_NT_WORKSTATION )
 		return 3;//WIN_7;
+	if(osVerInfo.dwMajorVersion == 6 && osVerInfo.dwMinorVersion == 2 && osVerEx.wProductType == VER_NT_WORKSTATION )
+		return 4;//WIN_8
 
 	return -1;
 }
@@ -213,8 +215,8 @@ LRESULT DrawDetectionColor(LPARAM lParam)
             
         case CDDS_ITEMPREPAINT:
 			{
-				TCHAR* sTemp = (TCHAR*)malloc(255);
-				ListView_GetItemText(GetDlgItem(hwDlgMainFrame,IDC_PLUGINS),(int)nmlvCustDraw->nmcd.dwItemSpec,2,sTemp,255);
+				TCHAR* sTemp = (TCHAR*)malloc(MAX_PATH);
+				ListView_GetItemText(GetDlgItem(hwDlgMainFrame,IDC_PLUGINS),(int)nmlvCustDraw->nmcd.dwItemSpec,2,sTemp,MAX_PATH);
 
 				if (wcsstr(sTemp,L"TRUE") != NULL)
 				{

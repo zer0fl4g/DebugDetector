@@ -10,9 +10,9 @@ __declspec(dllexport) TCHAR* __cdecl PluginName(void)
 	return L"BadProcessList";
 }
 
-__declspec(dllexport) TCHAR* __cdecl PluginVersion(void)
+__declspec(dllexport) char* __cdecl PluginVersion(void)
 {
-	return L"0.1";
+	return __DATE__;
 }
 
 __declspec(dllexport) TCHAR* __cdecl PluginErrorMessage(void)
@@ -28,6 +28,7 @@ __declspec(dllexport) DWORD __cdecl PluginDebugCheck(int iWinVer)
 	vProcList.push_back(L"windbg.exe");
 	vProcList.push_back(L"devenv.exe");
 	vProcList.push_back(L"ImmunityDebugger.exe");
+	vProcList.push_back(L"idaq.exe");
 
 	HANDLE hProcessSnap = NULL,hProc = NULL;
 	PROCESSENTRY32W pe32w;
