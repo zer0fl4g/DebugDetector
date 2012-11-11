@@ -30,7 +30,7 @@ LRESULT CALLBACK MainDLGProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			LvCol.cx = 0x100;                               
 			SendMessage(hwPluginList,LVM_INSERTCOLUMN,0,(LPARAM)&LvCol);
 			LvCol.pszText = L"Version";
-			LvCol.cx = 0x45;
+			LvCol.cx = 0x50;
 			SendMessage(hwPluginList,LVM_INSERTCOLUMN,1,(LPARAM)&LvCol);
 			LvCol.pszText = L"Debugged"; 
 			LvCol.cx = 0x40;
@@ -225,9 +225,16 @@ LRESULT DrawDetectionColor(LPARAM lParam)
 					free(sTemp);
 					return CDRF_NEWFONT;
 				}
-				else{
+				if (wcsstr(sTemp,L"FALSE") != NULL)
+				{
 					nmlvCustDraw->clrText   = RGB(0,0,0);
 					nmlvCustDraw->clrTextBk = RGB(0,255,0);
+					free(sTemp);
+					return CDRF_NEWFONT;
+				}
+				else{
+					nmlvCustDraw->clrText   = RGB(0,0,0);
+					nmlvCustDraw->clrTextBk = RGB(0,0,255);
             		free(sTemp);
 					return CDRF_NEWFONT;
 				}

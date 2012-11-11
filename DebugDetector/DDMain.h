@@ -2,7 +2,6 @@
 #include <WindowsX.h>
 #include <CommCtrl.h>
 #include <vector>
-#include <CommCtrl.h>
 #include "resource.h"
 
 // Leak detection
